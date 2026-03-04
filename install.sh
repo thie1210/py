@@ -4,8 +4,8 @@
 # This script downloads Python and py without requiring an existing Python installation
 #
 # Usage:
-#   curl -sSL https://pyproject.org/install.sh | sh
-#   curl -sSL https://pyproject.org/install.sh | sh -s -- --help
+#   curl -sSL https://raw.githubusercontent.com/thie1210/py/main/install.sh | sh
+#   curl -sSL https://raw.githubusercontent.com/thie1210/py/main/install.sh | sh -s -- --help
 #
 # Based on rustup and uv installation patterns
 #
@@ -114,8 +114,31 @@ install_py() {
     
     # Create lib directory for py installation
     mkdir -p "$PY_BASE_DIR/lib"
+    mkdir -p "$PY_BASE_DIR/downloads"
     
-    # Create a simple launcher script
+    # Download py source from GitHub
+    local py_url="https://github.com/thie1210/py/archive/refs/tags/v$PY_VERSION.tar.gz"
+    local download_file="$PY_BASE_DIR/downloads/py.tar.gz"
+    
+    echo "  Downloading py $PY_VERSION..."
+    if ! download "$py_url" "$download_file"; then
+        err "Failed to download py. Please check your internet connection."
+    fi
+    
+    echo "  Extracting..."
+    tar -xzf "$download_file" -C "$PY_BASE_DIR/downloads" || err "Failed to extract py"
+    rm -f "$download_file"
+    
+    # Move to final location
+    local extracted_dir="$PY_BASE_DIR/downloads/py-$PY_VERSION"
+    if [ -d "$extracted_dir" ]; then
+        mv "$extracted_dir" "$PY_BASE_DIR/lib/py"
+        echo "  ✓ py installed to $PY_BASE_DIR/lib/py"
+    else
+        err "Failed to find extracted py source"
+    fi
+    
+    # Create launcher script
     local launcher="$PY_BIN_DIR/py"
     mkdir -p "$PY_BIN_DIR"
     
@@ -134,13 +157,13 @@ PY_LIB="$PY_BASE_DIR/lib/py"
 
 if [ ! -f "$PYTHON_BIN" ]; then
     echo "Error: Managed Python not found at $PYTHON_BIN"
-    echo "Please run the installer: curl -sSL https://pyproject.org/install.sh | sh"
+    echo "Please run the installer: curl -sSL https://raw.githubusercontent.com/thie1210/py/main/install.sh | sh"
     exit 1
 fi
 
 if [ ! -d "$PY_LIB" ]; then
     echo "Error: py not installed at $PY_LIB"
-    echo "Please run the installer: curl -sSL https://pyproject.org/install.sh | sh"  
+    echo "Please run the installer: curl -sSL https://raw.githubusercontent.com/thie1210/py/main/install.sh | sh"
     exit 1
 fi
 
@@ -149,27 +172,6 @@ exec "$PYTHON_BIN" "$PY_LIB/src/py/__main__.py" "$@"
 EOF
     
     chmod +x "$launcher"
-    
-    # Copy only necessary py source files
-    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    local py_source="$script_dir"
-    
-    if [ -d "$py_source/src/py" ]; then
-        # Create destination directory
-        mkdir -p "$PY_BASE_DIR/lib/py/src"
-        
-        # Copy only src/ directory (the actual code)
-        cp -r "$py_source/src/py" "$PY_BASE_DIR/lib/py/src/"
-        
-        # Copy essential files
-        [ -f "$py_source/pyproject.toml" ] && cp "$py_source/pyproject.toml" "$PY_BASE_DIR/lib/py/"
-        [ -f "$py_source/README.md" ] && cp "$py_source/README.md" "$PY_BASE_DIR/lib/py/"
-        
-        echo "  ✓ py installed to $PY_BASE_DIR/lib/py"
-    else
-        echo "  ⚠ py source not found. You'll need to install it manually."
-    fi
-    
     echo "  ✓ py launcher created at $launcher"
 }
 
