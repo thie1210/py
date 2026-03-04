@@ -157,13 +157,13 @@ PY_LIB="$PY_BASE_DIR/lib/py"
 
 if [ ! -f "$PYTHON_BIN" ]; then
     echo "Error: Managed Python not found at $PYTHON_BIN"
-    echo "Please run the installer: curl -sSL https://raw.githubusercontent.com/thie1210/py/main/install.sh | sh"
+    echo "Please run the installer: curl -sSL https://raw.githubusercontent.com/thie1210/py/v$PY_VERSION/install.sh | sh"
     exit 1
 fi
 
 if [ ! -d "$PY_LIB" ]; then
     echo "Error: py not installed at $PY_LIB"
-    echo "Please run the installer: curl -sSL https://raw.githubusercontent.com/thie1210/py/main/install.sh | sh"
+    echo "Please run the installer: curl -sSL https://raw.githubusercontent.com/thie1210/py/v$PY_VERSION/install.sh | sh"
     exit 1
 fi
 
