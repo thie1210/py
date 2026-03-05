@@ -19,6 +19,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Honors the "snakes eat snake food" philosophy
 - Perfect metaphor: serpents shed skin to grow (like package updates)
 
+## [0.2.18] - 2026-03-05
+
+### Fixed
+- Fixed remaining 'PY UPDATE:' message in actual update path (was 'SRPT UPDATE:' only in dry-run)
+- Renamed get_py_launcher_path to get_srpt_launcher_path
+- Changed PY_BIN_DIR to SRPT_BIN_DIR environment variable
+
 ## [0.2.17] - 2026-03-05
 
 ### Fixed
