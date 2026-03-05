@@ -1,4 +1,4 @@
-# Py
+# Srpt
 
 [![Py PI](https://img.shields.io/pypi/v/py.svg)](https://pypi.org/project/py/)
 [![Python Versions](https://img.shields.io/pypi/pyversions/py.svg)](https://pypi.org/project/py/)
@@ -9,7 +9,7 @@
 
 Py is a modern, performant Python package manager inspired by uv. It provides a unified interface for Python version management, package installation, and project workflows—designed to make Python onboarding simple and FUD-free.
 
-## Why Py?
+## Why Srpt?
 
 - ⚡ **Actually measured**: 6.3x faster than pip through profiling and optimization
 - 🐍 **Python-built**: Snakes eat snake food
