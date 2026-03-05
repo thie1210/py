@@ -87,6 +87,8 @@ def main():
         return audit_command(args.args)
     elif args.command_or_script == "health":
         return health_command(args.args)
+    elif args.command_or_script == "rebuild":
+        return rebuild_command(args.args)
     else:
         # If it's not a known command and not a file, it might be a script that doesn't exist yet
         # or we just default to helping the user
@@ -372,6 +374,35 @@ def health_command(args: List[str]):
     # TODO: Implement --fix
     if fix:
         print("\n  Auto-fix not yet implemented")
+
+
+def rebuild_command(args: List[str]):
+    """Rebuild project with a different Python version."""
+    from srpt.rebuild import rebuild_project
+
+    # Parse rebuild-specific arguments
+    target_version = None
+    apply = "--apply" in args
+    restore = "--restore" in args
+    list_backups = "--list-backups" in args
+
+    # Get target version if specified
+    for i, arg in enumerate(args):
+        if arg == "--with-version" and i + 1 < len(args):
+            target_version = args[i + 1]
+            break
+
+    # Run rebuild
+    success = rebuild_project(
+        project_root=Path.cwd(),
+        target_version=target_version,
+        dry_run=not apply,
+        restore=restore,
+        list_backups=list_backups,
+    )
+
+    if not success:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
