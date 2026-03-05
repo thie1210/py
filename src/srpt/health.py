@@ -412,23 +412,17 @@ def format_health_report(health: Dict, full: bool = False) -> None:
     else:
         print(f"  ✗ Vulnerabilities: {len(vulnerabilities)} found")
 
-        # Ensure vulnerabilities is a list
-        if isinstance(vulnerabilities, dict):
-            # Convert dict to list of values
-            vulnerabilities = list(vulnerabilities.values())
-
         for vuln in vulnerabilities[:5]:  # Show first 5
-            if isinstance(vuln, dict):
-                pkg = vuln.get("package", {})
-                name = pkg.get("name", "unknown") if isinstance(pkg, dict) else "unknown"
-                version = pkg.get("version", "unknown") if isinstance(pkg, dict) else "unknown"
-                vuln_id_obj = vuln.get("id", {})
-                vuln_id = (
-                    vuln_id_obj.get("id", "unknown") if isinstance(vuln_id_obj, dict) else "unknown"
-                )
-                print(f"    • {name} {version}: {vuln_id}")
-            else:
-                print(f"    • {vuln}")
+            pkg = vuln.get("package", {})
+            name = pkg.get("name", "unknown")
+            version = pkg.get("version", "unknown")
+            vuln_id_obj = vuln.get("id", {})
+            vuln_id = (
+                vuln_id_obj.get("id", "unknown")
+                if isinstance(vuln_id_obj, dict)
+                else str(vuln_id_obj)
+            )
+            print(f"    • {name} {version}: {vuln_id}")
 
         if len(vulnerabilities) > 5:
             print(f"    ... and {len(vulnerabilities) - 5} more")

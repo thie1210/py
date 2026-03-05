@@ -104,11 +104,42 @@ def run_pip_audit(
 
         data = json.loads(result.stdout)
 
-        # Filter ignored CVEs
-        if ignore_cves:
-            data = [vuln for vuln in data if vuln.get("id", {}).get("id", "") not in ignore_cves]
+        # pip-audit returns a list of packages with their vulnerabilities
+        # Format: [{"name": "pkg", "version": "1.0", "vulns": [{...}]}]
+        # We need to flatten this into a list of vulnerabilities
 
-        return data
+        vulnerabilities = []
+        for package in data:
+            package_name = package.get("name", "unknown")
+            package_version = package.get("version", "unknown")
+            vulns = package.get("vulns", [])
+
+            for vuln in vulns:
+                # Add package info to each vulnerability
+                vuln_entry = {
+                    "package": {
+                        "name": package_name,
+                        "version": package_version,
+                    },
+                    "id": vuln.get("id", {}),
+                    "fix_versions": vuln.get("fix_versions", []),
+                    "severity": vuln.get("severity", "UNKNOWN"),
+                }
+
+                # Filter ignored CVEs
+                if ignore_cves:
+                    vuln_id = vuln_entry.get("id", {})
+                    if isinstance(vuln_id, dict):
+                        vuln_id_str = vuln_id.get("id", "")
+                    else:
+                        vuln_id_str = str(vuln_id)
+
+                    if vuln_id_str not in ignore_cves:
+                        vulnerabilities.append(vuln_entry)
+                else:
+                    vulnerabilities.append(vuln_entry)
+
+        return vulnerabilities
 
     except json.JSONDecodeError as e:
         print_error(f"Failed to parse pip-audit output: {e}")
