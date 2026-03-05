@@ -7,7 +7,7 @@
 
 **A performance profiled package manager**
 
-Py is a modern, performant Python package manager inspired by uv. It provides a unified interface for Python version management, package installation, and project workflows—designed to make Python onboarding simple and FUD-free.
+Srpt is a modern, performant Python package manager inspired by uv. It provides a unified interface for Python version management, package installation, and project workflows—designed to make Python onboarding simple and FUD-free.
 
 ## Why Srpt?
 
@@ -38,7 +38,7 @@ $env:PATH += ";$env:USERPROFILE\.local\bin"
 
 ```bash
 # Start Python interpreter
-py
+srpt
 
 # Check project status
 srpt status
@@ -57,7 +57,7 @@ srpt --with-version 3.14 my_script.py
 srpt versions
 ```
 
-**What's a project?** Just a folder with a `.venv` and `pyproject.toml`. That's it. Transform any folder into a project by running `py init` or `py install <package>`. No ceremony, no complex setup.
+**What's a project?** Just a folder with a `.venv` and `pyproject.toml`. That's it. Transform any folder into a project by running `srpt init` or `srpt install <package>`. No ceremony, no complex setup.
 
 ## Features
 
@@ -83,17 +83,17 @@ PROJECT
   ✓ .venv (Python 3.14.3)
 
 PYTHON
-  Version: 3.14.3 → Run 'py versions' for all
-  → Run 'py fetch <version>' to install another
+  Version: 3.14.3 → Run 'srpt versions' for all
+  → Run 'srpt fetch <version>' to install another
 
 PACKAGES
-  Installed: 42 → Run 'py list' for details
+  Installed: 42 → Run 'srpt list' for details
 
 DEPENDENCIES
   Tracked: 5 (requests, flask, django, ...)
   Installed: 42
-  Status: ⚠ Out of sync
-    → Run 'py sync' to synchronize
+  Status: ! Out of sync
+    → Run 'srpt sync' to synchronize
 ```
 
 ### 📦 Package Management
@@ -130,7 +130,7 @@ srpt --with-version 3.14 script.py
 
 ### ⚡ Performance
 
-Py is designed for speed:
+Srpt is designed for speed:
 
 - **Parallel operations**: HTTP/2 for downloads, parallel metadata fetches, parallel wheel installation
 - **Smart caching**: Resolution cache (24hr TTL), metadata cache (7 day TTL), learning system
@@ -138,7 +138,7 @@ Py is designed for speed:
 
 **Benchmarks:**
 
-| Scenario | py | pip | Improvement |
+| Scenario | srpt | pip | Improvement |
 |----------|----|----|-------------|
 | Fresh install | 13.87s | 13.77s | ~same |
 | With learning | 4.23s | 13.77s | **6.3x faster** |
@@ -146,10 +146,10 @@ Py is designed for speed:
 
 ## Architecture
 
-Py is built with a modular, async-first architecture:
+Srpt is built with a modular, async-first architecture:
 
 ```
-src/py/
+src/srpt/
 ├── fetcher.py              # Python version management
 ├── parallel_resolver.py    # Parallel dependency resolution
 ├── pypi.py                 # PyPI API client (HTTP/2)
@@ -164,7 +164,7 @@ src/py/
 
 ### Key Design Decisions
 
-1. **Pure Python**: No Rust or compiled extensions by default
+1. **Pure Python**: Python, Python, Python, or compiled extensions by default
 2. **Async I/O**: All network operations use async/await
 3. **Modular**: Each component is independent and testable
 4. **Caching**: Multi-layer caching strategy for performance
@@ -172,7 +172,7 @@ src/py/
 
 ## Comparison with Other Tools
 
-| Feature | py | pip | uv | poetry |
+| Feature | srpt | pip | uv | poetry |
 |---------|----|----|----|--------|
 | Written in | Python | Python | Rust | Python |
 | Package installation | ✓ | ✓ | ✓ | ✓ |
@@ -187,8 +187,8 @@ src/py/
 
 ```bash
 # Clone and install
-git clone https://github.com/psf/py.git
-cd py
+git clone https://github.com/psf/srpt.git
+cd srpt
 pip install -e ".[dev]"
 
 # Run tests
@@ -211,26 +211,26 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## Project Status
 
-Py is currently in **pre-alpha** (v0.1.0). Core features are working:
+Srpt is currently in **pre-alpha** (v0.1.0). Core features are working:
 
-- ✅ Package installation (`py install`)
-- ✅ Package listing (`py list`)
-- ✅ Package uninstallation (`py uninstall`)
-- ✅ Python version management (`py fetch`, `py versions`)
-- ✅ Project status (`py status`)
+- ✅ Package installation (`srpt install`)
+- ✅ Package listing (`srpt list`)
+- ✅ Package uninstallation (`srpt uninstall`)
+- ✅ Python version management (`srpt fetch`, `srpt versions`)
+- ✅ Project status (`srpt status`)
 - ✅ Parallel downloads and installation
 - ✅ Learning system for performance
-- 🚧 Project initialization (`py init`) - coming soon
-- 🚧 Dependency tracking (`py add`, `py remove`, `py sync`) - coming soon
+- 🚧 Project initialization (`srpt init`) - coming soon
+- 🚧 Dependency tracking (`srpt add`, `srpt remove`, `srpt sync`) - coming soon
 - 🚧 Lock file support - coming soon
 
 ## Roadmap
 
 ### v0.2.0 - Project Management
-- `py init` - Initialize new projects
-- `py add` - Add dependencies to pyproject.toml
-- `py remove` - Remove dependencies from pyproject.toml
-- `py sync` - Synchronize venv with pyproject.toml
+- `srpt init` - Initialize new projects
+- `srpt add` - Add dependencies to pyproject.toml
+- `srpt remove` - Remove dependencies from pyproject.toml
+- `srpt sync` - Synchronize venv with pyproject.toml
 
 ### v0.3.0 - Enhanced Features
 - Lock file support
