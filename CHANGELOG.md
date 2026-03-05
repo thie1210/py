@@ -19,6 +19,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Honors the "snakes eat snake food" philosophy
 - Perfect metaphor: serpents shed skin to grow (like package updates)
 
+## [0.2.15] - 2026-03-05
+
+### Fixed
+- Fixed rebuild command Python path detection to use ~/.local/share/py/python/ (not ~/.local/share/srpt/python/)
+- Aligned rebuild command with fetcher logic for Python installation discovery
+
 ## [Unreleased]
 
 ### Added
