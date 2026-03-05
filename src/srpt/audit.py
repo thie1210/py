@@ -110,11 +110,19 @@ def run_pip_audit(
 
         vulnerabilities = []
         for package in data:
+            # Skip if package is not a dict
+            if not isinstance(package, dict):
+                continue
+
             package_name = package.get("name", "unknown")
             package_version = package.get("version", "unknown")
             vulns = package.get("vulns", [])
 
             for vuln in vulns:
+                # Skip if vuln is not a dict
+                if not isinstance(vuln, dict):
+                    continue
+
                 # Add package info to each vulnerability
                 vuln_entry = {
                     "package": {

@@ -181,7 +181,8 @@ def check_cache_status(project_root: Path) -> Dict:
     from pathlib import Path
 
     cache_dir = (
-        Path(os.environ.get("PY_BASE_DIR", str(Path.home() / ".local" / "share" / "py"))) / "cache"
+        Path(os.environ.get("SRPT_BASE_DIR", str(Path.home() / ".local" / "share" / "srpt")))
+        / "cache"
     )
 
     if not cache_dir.exists():
