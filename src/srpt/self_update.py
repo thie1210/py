@@ -146,14 +146,14 @@ def get_py_install_dir() -> Path:
     return Path(srpt_base_dir) / "lib" / "srpt"
 
 
-def get_py_launcher_path() -> Path:
+def get_srpt_launcher_path() -> Path:
     """
     Get the srpt launcher script path.
 
     Returns:
         Path to srpt launcher script
     """
-    py_bin_dir = os.environ.get("PY_BIN_DIR", str(Path.home() / ".local" / "bin"))
+    srpt_bin_dir = os.environ.get("SRPT_BIN_DIR", str(Path.home() / ".local" / "bin"))
     return Path(srpt_bin_dir) / "srpt"
 
 
@@ -235,7 +235,7 @@ async def self_update(
         return True
 
     # Actually perform the update
-    print("\nPY UPDATE:")
+    print("\nSRPT UPDATE:")
     print(f"  Current: {current_version}")
     print(f"  Target:  {version}")
     print()
