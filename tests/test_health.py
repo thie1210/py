@@ -246,7 +246,7 @@ class TestHealthCheck:
         ):
             result = await health_check(tmp_path, full=False)
 
-            assert "py_version" in result
+            assert "srpt_version" in result
             assert "python_version" in result
             assert "cache" in result
             assert "security" in result
@@ -262,7 +262,7 @@ class TestFormatHealthReport:
     def test_format_report_no_issues(self, tmp_path, capsys):
         """Test formatting report with no issues."""
         health = {
-            "py_version": {
+            "srpt_version": {
                 "current": "0.2.8",
                 "latest": "0.2.8",
                 "update_available": False,
@@ -299,7 +299,7 @@ class TestFormatHealthReport:
     def test_format_report_with_vulnerabilities(self, tmp_path, capsys):
         """Test formatting report with vulnerabilities."""
         health = {
-            "py_version": {
+            "srpt_version": {
                 "current": "0.2.8",
                 "latest": "0.2.8",
                 "update_available": False,
@@ -340,7 +340,7 @@ class TestFormatHealthReport:
     def test_format_report_with_outdated(self, tmp_path, capsys):
         """Test formatting report with outdated packages."""
         health = {
-            "py_version": {
+            "srpt_version": {
                 "current": "0.2.8",
                 "latest": "0.2.8",
                 "update_available": False,

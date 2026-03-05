@@ -512,7 +512,7 @@ def format_health_report(health: Dict, full: bool = False) -> None:
     print("\nSRPT HEALTH CHECK")
 
     # srpt version
-    srpt_version = health.get("py_version", {})
+    srpt_version = health.get("srpt_version", {})
     current = srpt_version.get("current", "unknown")
     latest = srpt_version.get("latest", "unknown")
     update_available = srpt_version.get("update_available", False)
