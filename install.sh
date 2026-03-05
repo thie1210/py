@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # Configuration
-PY_VERSION="0.1.2"
+PY_VERSION="0.1.3"
 PYTHON_VERSION="3.13.12"
 PYTHON_BUILD_STANDALONE_TAG="20260211"
 PY_BASE_DIR="${PY_BASE_DIR:-$HOME/.local/share/py}"
@@ -132,6 +132,10 @@ install_py() {
     # Move to final location
     local extracted_dir="$PY_BASE_DIR/downloads/py-$PY_VERSION"
     if [ -d "$extracted_dir" ]; then
+        # Remove old installation if exists
+        if [ -d "$PY_BASE_DIR/lib/py" ]; then
+            rm -rf "$PY_BASE_DIR/lib/py"
+        fi
         mv "$extracted_dir" "$PY_BASE_DIR/lib/py"
         echo "  ✓ py installed to $PY_BASE_DIR/lib/py"
     else
