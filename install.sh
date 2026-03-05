@@ -13,7 +13,7 @@
 set -euo pipefail
 
 # Configuration
-SRPT_VERSION="0.1.0"
+SRPT_VERSION="0.2.0"
 PYTHON_VERSION="3.13.12"
 PYTHON_BUILD_STANDALONE_TAG="20260211"
 SRPT_BASE_DIR="${SRPT_BASE_DIR:-$HOME/.local/share/srpt}"
@@ -105,41 +105,37 @@ install_python() {
 }
 
 # Install py itself
-install_py() {
+install_srpt() {
     local python_bin="$SRPT_BASE_DIR/python/$PYTHON_VERSION-$PYTHON_BUILD_STANDALONE_TAG/python/bin/python3"
     
     echo ""
-    echo "PY"
-    echo "  Installing py $SRPT_VERSION..."
+    echo "SRPT"
+    echo "  Installing srpt $SRPT_VERSION..."
     
-    # Create lib directory for py installation
     mkdir -p "$SRPT_BASE_DIR/lib"
     mkdir -p "$SRPT_BASE_DIR/downloads"
     
-    # Download py source from GitHub
-    local py_url="https://github.com/thie1210/srpt/archive/refs/tags/v$SRPT_VERSION.tar.gz"
-    local download_file="$SRPT_BASE_DIR/downloads/py.tar.gz"
+    local srpt_url="https://github.com/thie1210/srpt/archive/refs/tags/v$SRPT_VERSION.tar.gz"
+    local download_file="$SRPT_BASE_DIR/downloads/srpt.tar.gz"
     
-    echo "  Downloading py $SRPT_VERSION..."
-    if ! download "$py_url" "$download_file"; then
-        err "Failed to download py. Please check your internet connection."
+    echo "  Downloading srpt $SRPT_VERSION..."
+    if ! download "$srpt_url" "$download_file"; then
+        err "Failed to download srpt. Please check your internet connection."
     fi
     
     echo "  Extracting..."
-    tar -xzf "$download_file" -C "$SRPT_BASE_DIR/downloads" || err "Failed to extract py"
+    tar -xzf "$download_file" -C "$SRPT_BASE_DIR/downloads" || err "Failed to extract srpt"
     rm -f "$download_file"
     
-    # Move to final location
-    local extracted_dir="$SRPT_BASE_DIR/downloads/py-$SRPT_VERSION"
+    local extracted_dir="$SRPT_BASE_DIR/downloads/srpt-$SRPT_VERSION"
     if [ -d "$extracted_dir" ]; then
-        # Remove old installation if exists
-        if [ -d "$SRPT_BASE_DIR/lib/py" ]; then
-            rm -rf "$SRPT_BASE_DIR/lib/py"
+        if [ -d "$SRPT_BASE_DIR/lib/srpt" ]; then
+            rm -rf "$SRPT_BASE_DIR/lib/srpt"
         fi
-        mv "$extracted_dir" "$SRPT_BASE_DIR/lib/py"
-        echo "  ✓ srpt installed to $SRPT_BASE_DIR/lib/py"
+        mv "$extracted_dir" "$SRPT_BASE_DIR/lib/srpt"
+        echo "  ✓ srpt installed to $SRPT_BASE_DIR/lib/srpt"
     else
-        err "Failed to find extracted py source"
+        err "Failed to find extracted srpt source"
     fi
     
     # Install dependencies
@@ -197,36 +193,36 @@ finalize() {
     echo "  ✓ srpt installed to $SRPT_BIN_DIR/srpt"
     echo ""
     
-    # Check if py is in PATH
-    if ! command -v py > /dev/null 2>&1; then
+    # Check if srpt is in PATH
+    if ! command -v srpt > /dev/null 2>&1; then
         echo "PATH"
-        echo "  ⚠ py not in PATH"
+        echo "  ⚠ srpt not in PATH"
         echo "  → Add to PATH: export PATH=\"$SRPT_BIN_DIR:\$PATH\""
         echo "  → Add to shell profile (~/.bashrc, ~/.zshrc) for permanence"
         echo ""
     else
-        py --version
+        srpt --version
         echo ""
     fi
     
     echo "QUICK START"
-    echo "  py                    # Start Python REPL"
-    echo "  py script.py          # Run a Python script"
-    echo "  py install requests   # Install a package"
-    echo "  py status             # Show project status"
+    echo "  srpt                    # Start Python REPL"
+    echo "  srpt script.py          # Run a Python script"
+    echo "  srpt install requests   # Install a package"
+    echo "  srpt status             # Show project status"
     echo ""
 }
 
 # Main
 main() {
-    echo "PY INSTALLER"
+    echo "SRPT INSTALLER"
     echo ""
     
     need_cmd curl
     need_cmd tar
     
     install_python
-    install_py
+    install_srpt
     finalize
 }
 
