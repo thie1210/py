@@ -287,9 +287,9 @@ def rebuild_project(
     # Step 1: Backup current venv
     if venv_path.exists():
         print("\nBACKUP:")
-        backup_name = f"upgrade.{datetime.now().strftime('%Y-%m-%d')}.python-{target_version}"
-        print(f"  Creating backup: {backup_name}")
-        backup_path = backup_manager.create_backup(backup_name)
+        backup_info = f"python-{target_version}"
+        print(f"  Creating backup: {backup_info}")
+        backup_path = backup_manager.create_backup(backup_info)
         if backup_path:
             print_success(f"Backup created: {backup_path.name}")
         else:
