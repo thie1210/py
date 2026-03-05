@@ -68,17 +68,41 @@ async def get_latest_release_info() -> dict:
         httpx.HTTPError: If request fails
     """
     async with httpx.AsyncClient(http2=True, timeout=10.0) as client:
-        response = await client.get(GITHUB_API)
-        response.raise_for_status()
+        try:
+            response = await client.get(GITHUB_API)
 
-        data = response.json()
+            if response.status_code == 404:
+                # No releases yet, fall back to tags
+                tags_url = "https://api.github.com/repos/thie1210/py/tags"
+                response = await client.get(tags_url)
+                response.raise_for_status()
 
-        return {
-            "version": data["tag_name"].lstrip("v"),
-            "changelog": data.get("body", ""),
-            "published_at": data.get("published_at", ""),
-            "html_url": data.get("html_url", ""),
-        }
+                tags_data = response.json()
+                if tags_data:
+                    latest_tag = tags_data[0]
+                    return {
+                        "version": latest_tag["name"].lstrip("v"),
+                        "changelog": "",
+                        "published_at": "",
+                        "html_url": latest_tag.get("zipball_url", ""),
+                    }
+                else:
+                    raise ValueError("No releases or tags found")
+
+            response.raise_for_status()
+
+            data = response.json()
+
+            return {
+                "version": data["tag_name"].lstrip("v"),
+                "changelog": data.get("body", ""),
+                "published_at": data.get("published_at", ""),
+                "html_url": data.get("html_url", ""),
+            }
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 404:
+                raise ValueError("No releases found. Create a release first.")
+            raise
 
 
 async def download_release(version: str, target_dir: Path) -> Path:
@@ -172,12 +196,13 @@ async def self_update(
             return True
 
     # Get target version
+    changelog = ""
     if target_version:
         version = target_version
     else:
         release_info = await get_latest_release_info()
         version = release_info["version"]
-        changelog = release_info["changelog"]
+        changelog = release_info.get("changelog", "")
 
     # Check if already on target version
     from packaging.version import Version
