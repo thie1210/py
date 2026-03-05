@@ -60,7 +60,7 @@ def get_installed_packages(venv_path: Path) -> List[Dict[str, str]]:
 
 def check_python_version_available(version: str) -> bool:
     """
-    Check if a Python version is available in srpt's managed installations.
+    Check if a Python version is available in managed installations.
 
     Args:
         version: Python version string (e.g., "3.12", "3.13.12")
@@ -68,10 +68,10 @@ def check_python_version_available(version: str) -> bool:
     Returns:
         True if version is available
     """
-    import os
-
-    srpt_base = Path(os.environ.get("SRPT_BASE_DIR", Path.home() / ".local" / "share" / "srpt"))
-    python_dir = srpt_base / "python"
+    # Use the same logic as fetcher - check ~/.local/share/py/python/
+    # This is where Python installations are stored (for backward compatibility)
+    py_base = Path.home() / ".local" / "share" / "py"
+    python_dir = py_base / "python"
 
     if not python_dir.exists():
         return False
@@ -98,10 +98,9 @@ def get_python_binary_path(version: str) -> Optional[Path]:
     Returns:
         Path to Python binary or None if not found
     """
-    import os
-
-    srpt_base = Path(os.environ.get("SRPT_BASE_DIR", Path.home() / ".local" / "share" / "srpt"))
-    python_dir = srpt_base / "python"
+    # Use the same logic as fetcher - check ~/.local/share/py/python/
+    py_base = Path.home() / ".local" / "share" / "py"
+    python_dir = py_base / "python"
 
     if not python_dir.exists():
         return None
