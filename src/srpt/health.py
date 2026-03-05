@@ -128,14 +128,34 @@ def check_python_version(project_root: Path) -> Dict:
         import subprocess
 
         try:
-            result = subprocess.run([str(python_path), "--version"], capture_output=True, text=True)
-            version_str = result.stdout.strip() or result.stderr.strip()
-            version_str = version_str.replace("Python ", "")
+            result = subprocess.run(
+                [str(python_path), "--version"], capture_output=True, text=True, timeout=5
+            )
 
+            # Check if command succeeded
+            if result.returncode == 0:
+                version_str = result.stdout.strip() or result.stderr.strip()
+                version_str = version_str.replace("Python ", "")
+
+                return {
+                    "version": version_str,
+                    "venv": True,
+                    "path": str(venv_path),
+                }
+            else:
+                # Python binary exists but failed to run
+                return {
+                    "version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+                    "venv": True,
+                    "path": str(venv_path),
+                    "error": "venv Python binary failed to execute",
+                }
+        except subprocess.TimeoutExpired:
             return {
-                "version": version_str,
+                "version": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
                 "venv": True,
                 "path": str(venv_path),
+                "error": "venv Python check timed out",
             }
         except Exception:
             pass
@@ -363,10 +383,15 @@ def format_health_report(health: Dict, full: bool = False) -> None:
     python_version = health.get("python_version", {})
     version = python_version.get("version", "unknown")
     venv = python_version.get("venv", False)
+    python_error = python_version.get("error")
 
-    print(f"  ✓ Python: {version}")
-    if not venv:
-        print("    ! No .venv found")
+    if python_error:
+        print(f"  ! Python: {version}")
+        print(f"    ! {python_error}")
+    else:
+        print(f"  ✓ Python: {version}")
+        if not venv:
+            print("    ! No .venv found")
 
     # Cache
     cache = health.get("cache", {})
