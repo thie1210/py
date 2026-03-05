@@ -35,13 +35,14 @@ Build `srpt` (serpent) - A modern, performant Python package manager inspired by
 - Parallel version metadata pre-fetching before resolution
 - Rich library for progress bars and status output
 - Safe-by-default: All mutating operations are dry-run, require `--apply` flag
-- Python installations stored in `~/.local/share/py/python/` (NOT `~/.local/share/srpt/python/`)
+- Python installations stored in `~/.local/share/srpt/python/` (consistent with package name)
+- Environment variable: `SRPT_BASE_DIR` (defaults to `~/.local/share/srpt/`)
 
 ### Key Bug Fixes
 1. **pip-audit format** - Returns packages with `vulns` array, not flat vulnerability list
 2. **Version arithmetic** - `Version(__version__) + 1` doesn't work; use `f"{v.major}.{v.minor + 1}.{v.micro}"`
 3. **venv Python version detection** - Check `lib_path.parent.name` (e.g., "python3.13"), not `lib_path.name` ("site-packages")
-4. **Python installation path** - Managed Python is at `~/.local/share/py/python/`, NOT `~/.local/share/srpt/python/`
+4. **Data directory consistency** - Changed from `~/.local/share/py/` to `~/.local/share/srpt/` in v0.2.16
 
 ## Accomplished
 
@@ -65,12 +66,14 @@ Build `srpt` (serpent) - A modern, performant Python package manager inspired by
 - v0.2.13: Rebuild command
 - v0.2.14: Fixed version display consistency
 - v0.2.15: Fixed rebuild command Python path detection
+- v0.2.16: Changed data directory to ~/.local/share/srpt/ (was ~/.local/share/py/)
 
 ## Current State
 
-**Latest Release:** v0.2.15 (2026-03-05)
-- Fixed rebuild command to use correct Python installation path (~/.local/share/py/python/)
-- All tests passing
+**Latest Release:** v0.2.16 (2026-03-05)
+- **BREAKING**: Data directory now at `~/.local/share/srpt/` (consistent with package name)
+- Environment variable: `SRPT_BASE_DIR` (was `PY_BASE_DIR`)
+- All tests passing (42/42)
 - Ready for Phase 2
 
 ## Next Steps
@@ -92,15 +95,15 @@ srpt/
 │   ├── updates-upgrades-health-system.md  # Phase 1-3 implementation plan (Phase 1 complete)
 │   └── eol-checking-system.md             # EOL checking plan (ready to implement)
 ├── src/srpt/
-│   ├── __init__.py              # Version: "0.2.15"
+│   ├── __init__.py              # Version: "0.2.16"
 │   ├── __main__.py              # CLI entry point, command routing
-│   ├── rebuild.py               # Rebuild command - Fixed in v0.2.15
+│   ├── rebuild.py               # Rebuild command
 │   ├── health.py                # Health diagnostics, compatibility checking
 │   ├── status.py                # Project status dashboard
 │   ├── audit.py                 # Security audit (pip-audit wrapper)
 │   ├── self_update.py           # Self-update from GitHub releases
 │   ├── update.py                # Update command routing
-│   ├── fetcher.py               # Python version management (downloads to ~/.local/share/py/)
+│   ├── fetcher.py               # Python version management (downloads to ~/.local/share/srpt/)
 │   └── utils/
 │       ├── confirm.py           # --apply flag pattern
 │       ├── constraints.py       # Version constraint parsing
@@ -114,6 +117,7 @@ srpt/
 │   ├── test_resolver.py         # 1 test
 │   └── test_resolver_httpx.py   # 1 test
 ├── install.sh                   # Unix installer
-├── pyproject.toml              # name="srpt", version="0.2.15"
+├── install.ps1                  # Windows installer
+├── pyproject.toml              # name="srpt", version="0.2.16"
 └── README.md
 ```
