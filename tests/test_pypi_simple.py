@@ -1,7 +1,9 @@
 import asyncio
+import pytest
 from srpt.pypi import PyPIClient
 
 
+@pytest.mark.asyncio
 async def test_pypi():
     client = PyPIClient()
     try:

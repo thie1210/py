@@ -39,7 +39,8 @@ class TestCheckForUpdates:
             # Return a higher version
             from packaging.version import Version
 
-            higher_version = str(Version(__version__) + 1)
+            v = Version(__version__)
+            higher_version = f"{v.major}.{v.minor + 1}.{v.micro}"
             mock_response.json.return_value = {"tag_name": f"v{higher_version}"}
             mock_response.raise_for_status = MagicMock()
             mock_get.return_value = mock_response
@@ -160,7 +161,8 @@ class TestSelfUpdate:
         with patch("srpt.self_update.get_latest_release_info") as mock_info:
             from packaging.version import Version
 
-            higher_version = str(Version(__version__) + 1)
+            v = Version(__version__)
+            higher_version = f"{v.major}.{v.minor + 1}.{v.micro}"
             mock_info.return_value = {
                 "version": higher_version,
                 "changelog": "New features",

@@ -1,7 +1,9 @@
 import asyncio
+import pytest
 from srpt.resolver import resolve
 
 
+@pytest.mark.asyncio
 async def test_resolve_httpx():
     print("Resolving httpx...")
     candidates = await resolve(["httpx"])

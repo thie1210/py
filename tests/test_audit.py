@@ -86,8 +86,8 @@ class TestRunPipAudit:
                 assert call_args[0] == sys.executable
                 assert str(python) not in call_args
 
-    def test_uses_python_flag_for_venv(self, tmp_path):
-        """Test that pip-audit uses --python flag to specify venv."""
+    def test_uses_project_path_for_venv(self, tmp_path):
+        """Test that pip-audit receives project path for venv detection."""
         # Create a fake venv
         venv = tmp_path / ".venv"
         venv.mkdir()
@@ -105,12 +105,9 @@ class TestRunPipAudit:
 
                 run_pip_audit(tmp_path)
 
-                # Check that we used --python flag
+                # Check that we passed the project path
                 call_args = mock_run.call_args[0][0]
-                assert "--python" in call_args
-                # The venv python path should be after --python
-                python_idx = call_args.index("--python")
-                assert str(python) == call_args[python_idx + 1]
+                assert str(tmp_path) in call_args
 
     def test_no_venv_uses_current_environment(self, tmp_path):
         """Test that without venv, pip-audit uses current environment."""
@@ -154,13 +151,19 @@ class TestRunPipAudit:
         """Test parsing of vulnerability JSON output."""
         with patch("srpt.audit.ensure_pip_audit_installed", return_value=True):
             with patch("subprocess.run") as mock_run:
+                # pip-audit returns packages with vulns array
                 vuln_json = """[
                     {
-                        "package": {"name": "requests", "version": "2.28.0"},
-                        "id": {"id": "CVE-2023-32681"},
-                        "severity": "MEDIUM",
-                        "description": "Info disclosure",
-                        "fix_versions": ["2.31.0"]
+                        "name": "requests",
+                        "version": "2.28.0",
+                        "vulns": [
+                            {
+                                "id": "CVE-2023-32681",
+                                "severity": "MEDIUM",
+                                "description": "Info disclosure",
+                                "fix_versions": ["2.31.0"]
+                            }
+                        ]
                     }
                 ]"""
                 mock_run.return_value = MagicMock(
@@ -171,21 +174,34 @@ class TestRunPipAudit:
                 result = run_pip_audit(tmp_path)
                 assert len(result) == 1
                 assert result[0]["package"]["name"] == "requests"
+                assert result[0]["package"]["version"] == "2.28.0"
+                assert result[0]["id"] == "CVE-2023-32681"
 
     def test_filters_ignored_cves(self, tmp_path):
         """Test filtering of ignored CVEs."""
         with patch("srpt.audit.ensure_pip_audit_installed", return_value=True):
             with patch("subprocess.run") as mock_run:
+                # pip-audit format with multiple packages
                 vuln_json = """[
                     {
-                        "package": {"name": "requests", "version": "2.28.0"},
-                        "id": {"id": "CVE-2023-32681"},
-                        "severity": "MEDIUM"
+                        "name": "requests",
+                        "version": "2.28.0",
+                        "vulns": [
+                            {
+                                "id": "CVE-2023-32681",
+                                "severity": "MEDIUM"
+                            }
+                        ]
                     },
                     {
-                        "package": {"name": "pillow", "version": "9.5.0"},
-                        "id": {"id": "CVE-2023-44268"},
-                        "severity": "HIGH"
+                        "name": "pillow",
+                        "version": "9.5.0",
+                        "vulns": [
+                            {
+                                "id": "CVE-2023-44268",
+                                "severity": "HIGH"
+                            }
+                        ]
                     }
                 ]"""
                 mock_run.return_value = MagicMock(
@@ -195,7 +211,7 @@ class TestRunPipAudit:
 
                 result = run_pip_audit(tmp_path, ignore_cves=["CVE-2023-32681"])
                 assert len(result) == 1
-                assert result[0]["id"]["id"] == "CVE-2023-44268"
+                assert result[0]["id"] == "CVE-2023-44268"
 
 
 class TestFormatVulnerability:
